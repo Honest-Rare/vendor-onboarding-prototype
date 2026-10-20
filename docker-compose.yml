@@ -1,0 +1,27 @@
+# Supporting services. Used directly (`docker compose up -d`) or by the dev container.
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: onboarding
+      POSTGRES_PASSWORD: onboarding
+      POSTGRES_DB: onboarding
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      # Postgres 18 images keep data under /var/lib/postgresql/18/docker
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U onboarding -d onboarding"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "127.0.0.1:8026:8025"
+      - "127.0.0.1:1026:1025"
+
+volumes:
+  pgdata:

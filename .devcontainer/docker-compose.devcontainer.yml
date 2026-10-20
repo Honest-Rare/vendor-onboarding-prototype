@@ -1,0 +1,31 @@
+# Adds the Node 26 workspace container next to Postgres and Mailpit.
+services:
+  app:
+    # Built by initializeCommand in devcontainer.json (not here): Compose's Bake builder
+    # refuses the extra Dockerfile the Dev Containers extension would add to a build.
+    image: hr-onboarding-dev:local
+    command: sleep infinity
+    volumes:
+      - .:/workspace:cached
+      - node_modules:/workspace/node_modules
+      # Generated files stay in Docker volumes, out of the (iCloud-synced) project folder.
+      - api_dist:/workspace/apps/api/dist
+      - api_data:/workspace/apps/api/data
+      - web_next:/workspace/apps/web/.next
+    environment:
+      # Inside the container the services are reached by name, not localhost.
+      # These win over the values in .env.
+      DATABASE_URL: postgres://onboarding:onboarding@postgres:5432/onboarding
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+
+volumes:
+  node_modules:
+  api_dist:
+  api_data:
+  web_next:

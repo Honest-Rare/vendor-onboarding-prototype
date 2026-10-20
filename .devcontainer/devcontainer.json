@@ -1,0 +1,20 @@
+{
+  "name": "Vendor onboarding pre-prototype",
+  "dockerComposeFile": ["../docker-compose.yml", "docker-compose.devcontainer.yml"],
+  "service": "app",
+  "initializeCommand": "docker build -t hr-onboarding-dev:local .devcontainer",
+  "runServices": ["app", "postgres", "mailpit"],
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "forwardPorts": [3000, 4000],
+  "portsAttributes": {
+    "3000": { "label": "Web (storefront, admin, vendor panel)" },
+    "4000": { "label": "API" }
+  },
+  "postCreateCommand": "cp -n .env.example .env || true; npm install && npm run db:migrate && npm run db:seed",
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+    }
+  }
+}
