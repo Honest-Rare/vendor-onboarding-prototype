@@ -19,6 +19,7 @@ import { sectionDef, sectionsFor, visibleFields, type SectionContext, type Secti
 import { VendorsRepository, type ApplicationRow, type SectionRow, type VendorRow } from './vendors.repository.js';
 
 const MAX_TEXT = 5000;
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 @Injectable()
 export class OnboardingService {
@@ -165,6 +166,12 @@ export class OnboardingService {
         createdAt: vendor.created_at,
         liveAt: vendor.live_at,
         stripeAccountId: vendor.stripe_account_id,
+        legalName: vendor.legal_name,
+        vatId: vendor.vat_id,
+        taxNumber: vendor.tax_number,
+        address: { street: vendor.street, postcode: vendor.postcode, city: vendor.city, country: vendor.country },
+        slug: vendor.slug,
+        preModeration: vendor.pre_moderation,
       },
       application: {
         id: app.id,
@@ -214,6 +221,26 @@ export class OnboardingService {
     });
   }
 
+  /** Whether our team checks this vendor's new and edited products before they show in the shop. */
+  async setPreModeration(vendorId: string, enabled: boolean, user: SessionUser) {
+    const vendor = await this.repo.getVendor(vendorId);
+    if (!vendor) throw new NotFoundException('Vendor not found');
+    if (vendor.pre_moderation === enabled) return { ok: true };
+    await withTransaction(this.repo.db, async (client) => {
+      await this.repo.setPreModeration(vendorId, enabled, client);
+      await this.repo.logEvent(
+        {
+          subjectType: 'vendor',
+          subjectId: vendorId,
+          actor: `admin:${user.email}`,
+          reason: enabled ? 'Product checks switched on' : 'Product checks switched off',
+        },
+        client,
+      );
+    });
+    return { ok: true };
+  }
+
   // Helpers --------------------------------------------------------------------
 
   /** Moves the vendor between onboarding and ready as the go-live gate opens or closes. */
@@ -234,8 +261,9 @@ export class OnboardingService {
     }
   }
 
+  /** Only sections needed before go-live count; the others are asked for later. */
   private gateSections(defs: SectionDef[], rows: SectionRow[]) {
-    return defs.map((def) => ({ key: def.key, title: def.title, status: rows.find((r) => r.key === def.key)?.status ?? 'not_started' }));
+    return defs.filter((def) => !def.requiredBefore).map((def) => ({ key: def.key, title: def.title, status: rows.find((r) => r.key === def.key)?.status ?? 'not_started' }));
   }
 
   private async describeSection(def: SectionDef, rows: SectionRow[], ctx: SectionContext) {
@@ -248,6 +276,7 @@ export class OnboardingService {
       title: def.title,
       description: def.description,
       reviewer: def.reviewer,
+      requiredBefore: def.requiredBefore ?? 'go_live',
       status: row?.status ?? 'not_started',
       adminNote: row?.admin_note ?? null,
       updatedAt: row?.updated_at ?? null,
@@ -280,12 +309,19 @@ export class OnboardingService {
       } else {
         value = typeof raw === 'string' || typeof raw === 'number' ? String(raw).trim().slice(0, MAX_TEXT) : '';
       }
+      if (field.type === 'email' && value && !EMAIL.test(value as string)) {
+        throw new BadRequestException({ message: 'Check the email address', errors: [{ path: field.label, message: `${field.label} is not a valid email address` }] });
+      }
       const empty = value === '' || value === null || value === false;
       if (submit && field.required && empty) missing.push(field.label);
       data[field.key] = value;
     }
     if (missing.length > 0) {
       throw new BadRequestException({ message: 'Some required fields are empty', errors: missing.map((m) => ({ path: m, message: `${m} is required` })) });
+    }
+    const problems = submit && def.validate ? def.validate(data, ctx) : [];
+    if (problems.length > 0) {
+      throw new BadRequestException({ message: 'Some details need fixing', errors: problems.map((p) => ({ path: p.field, message: p.message })) });
     }
     return data;
   }

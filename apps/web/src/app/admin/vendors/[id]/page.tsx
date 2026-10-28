@@ -9,7 +9,20 @@ import { CATEGORY_LABELS, SECTION_STATUS, VENDOR_STATUS } from '@/lib/labels';
 import { displayValue, type Gate, type Section } from '@/lib/sections';
 
 type Detail = {
-  vendor: { id: string; shopName: string; status: string; createdAt: string; liveAt: string | null; stripeAccountId: string | null };
+  vendor: {
+    id: string;
+    shopName: string;
+    status: string;
+    createdAt: string;
+    liveAt: string | null;
+    stripeAccountId: string | null;
+    legalName: string;
+    vatId: string | null;
+    taxNumber: string | null;
+    address: { street: string | null; postcode: string | null; city: string | null; country: string };
+    slug: string;
+    preModeration: boolean;
+  };
   application: { id: string; legalName: string; email: string; country: string; categories: string[] };
   gate: Gate;
   sections: Section[];
@@ -45,6 +58,11 @@ function SectionReview({ vendorId, section, onDone }: { vendorId: string; sectio
         </h2>
         <StatusBadge map={SECTION_STATUS} value={section.status} />
       </div>
+      {section.requiredBefore === 'first_payout' && (
+        <p className="muted small" style={{ margin: 0 }}>
+          Not part of the go-live gate. Needed before the first payout.
+        </p>
+      )}
       {section.reviewer === 'stripe' ? (
         <p className="muted" style={{ margin: 0 }}>
           Checked by Stripe: identity and bank account are verified on Stripe&apos;s side. Approved when payouts are enabled.
@@ -107,6 +125,69 @@ function SectionReview({ vendorId, section, onDone }: { vendorId: string; sectio
   );
 }
 
+function BusinessDetails({
+  vendor,
+  appliedLegalName,
+  onDone,
+}: {
+  vendor: Detail['vendor'];
+  appliedLegalName: string;
+  onDone: () => Promise<unknown>;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<ApiError | null>(null);
+  const a = vendor.address;
+  const streetAndCity = [a.street, [a.postcode, a.city].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+
+  const togglePreModeration = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await api(`/admin/vendors/${vendor.id}/pre-moderation`, { json: { enabled: !vendor.preModeration } });
+      await onDone();
+    } catch (e) {
+      setError(e as ApiError);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="card stack" style={{ gap: 8 }} aria-labelledby="biz-title">
+      <h2 id="biz-title" style={{ margin: 0 }}>
+        Business
+      </h2>
+      <dl className="facts">
+        <dt>Legal name</dt>
+        <dd>
+          {vendor.legalName}
+          {vendor.legalName !== appliedLegalName && <div className="muted small">Applied as {appliedLegalName}</div>}
+        </dd>
+        <dt>Address</dt>
+        <dd>{streetAndCity ? `${streetAndCity}, ${a.country}` : <span className="muted">Missing ({a.country})</span>}</dd>
+        <dt>VAT ID</dt>
+        <dd>{vendor.vatId || '—'}</dd>
+        {vendor.taxNumber && (
+          <>
+            <dt>Tax number</dt>
+            <dd>{vendor.taxNumber}</dd>
+          </>
+        )}
+        <dt>Vendor page address</dt>
+        <dd>{vendor.slug}</dd>
+        <dt>Product checks</dt>
+        <dd>{vendor.preModeration ? 'Our team checks new and edited products' : 'Products go live without our check'}</dd>
+      </dl>
+      <ErrorBox error={error} />
+      <div className="row">
+        <button type="button" className="btn btn-small" disabled={busy} onClick={() => void togglePreModeration()}>
+          {vendor.preModeration ? 'Switch product checks off' : 'Switch product checks on'}
+        </button>
+      </div>
+    </section>
+  );
+}
+
 export default function VendorDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data, error, reload } = useLoad<Detail>(`/admin/vendors/${id}`, '/admin/login');
@@ -159,6 +240,7 @@ export default function VendorDetailPage() {
           ))}
         </div>
         <aside className="detail-side">
+          <BusinessDetails vendor={data.vendor} appliedLegalName={data.application.legalName} onDone={reload} />
           <section className="card" aria-labelledby="vh-title">
             <h2 id="vh-title">History</h2>
             <ol className="timeline">

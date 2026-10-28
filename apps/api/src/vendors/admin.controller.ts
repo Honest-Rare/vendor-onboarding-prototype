@@ -13,6 +13,7 @@ const reviewSchema = z.object({
   decision: z.enum(['approve', 'request_changes']),
   note: z.string().trim().max(2000).default(''),
 });
+const preModerationSchema = z.object({ enabled: z.boolean() });
 
 @Controller('admin')
 @UseGuards(AdminGuard)
@@ -72,5 +73,11 @@ export class AdminController {
   review(@Param('id', ParseUUIDPipe) id: string, @Param('key') key: string, @Body() body: unknown, @CurrentUser() user: SessionUser) {
     const input = parse(reviewSchema, body);
     return this.onboarding.reviewSection(id, key, user, input.decision, input.note);
+  }
+
+  @Post('vendors/:id/pre-moderation')
+  @HttpCode(200)
+  preModeration(@Param('id', ParseUUIDPipe) id: string, @Body() body: unknown, @CurrentUser() user: SessionUser) {
+    return this.onboarding.setPreModeration(id, parse(preModerationSchema, body).enabled, user);
   }
 }

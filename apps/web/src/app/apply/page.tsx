@@ -20,6 +20,18 @@ const STEPS = ['Your business', 'Contact', 'What you sell', 'Plan and agreement'
 const DRAFT_KEY = 'hr-application-draft-v1';
 
 type Photo = { id: string; name: string; preview?: string };
+type DataFile = { id: string; name: string };
+
+const PRODUCT_FILE_TYPES = [
+  'application/pdf',
+  'text/csv',
+  '.csv',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+].join(',');
 
 const EMPTY = {
   business: {
@@ -80,6 +92,7 @@ export default function ApplyPage() {
   const router = useRouter();
   const [form, setForm] = useState<Form>(EMPTY);
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [dataFiles, setDataFiles] = useState<DataFile[]>([]);
   const [step, setStep] = useState(0);
   const [errors, setErrors] = useState<string[]>([]);
   const [apiError, setApiError] = useState<ApiError | null>(null);
@@ -95,6 +108,7 @@ export default function ApplyPage() {
         const parsed = JSON.parse(saved);
         setForm({ ...EMPTY, ...parsed.form });
         setPhotos(parsed.photos ?? []);
+        setDataFiles(parsed.dataFiles ?? []);
         setStep(parsed.step ?? 0);
       }
     } catch {
@@ -108,12 +122,12 @@ export default function ApplyPage() {
     try {
       localStorage.setItem(
         DRAFT_KEY,
-        JSON.stringify({ form, step, photos: photos.map(({ id, name }) => ({ id, name })) }),
+        JSON.stringify({ form, step, photos: photos.map(({ id, name }) => ({ id, name })), dataFiles }),
       );
     } catch {
       // storage unavailable: the form still works
     }
-  }, [form, photos, step, loaded]);
+  }, [form, photos, dataFiles, step, loaded]);
 
   const set = <K extends keyof Form>(section: K, patch: Partial<Form[K]>) =>
     setForm((f) => ({ ...f, [section]: { ...f[section], ...patch } }));
@@ -144,6 +158,19 @@ export default function ApplyPage() {
     }
   };
 
+  const addDataFiles = async (files: FileList | null) => {
+    if (!files) return;
+    setApiError(null);
+    for (const file of Array.from(files)) {
+      try {
+        const saved = await uploadFile('/applications/product-data', file);
+        setDataFiles((d) => (d.length >= 5 ? d : [...d, saved]));
+      } catch (e) {
+        setApiError(e as ApiError);
+      }
+    }
+  };
+
   const submit = async () => {
     const e = stepErrors(3, form, photos);
     setErrors(e);
@@ -152,7 +179,7 @@ export default function ApplyPage() {
     setApiError(null);
     try {
       await api('/applications', {
-        json: { ...form, products: { ...form.products, photoIds: photos.map((p) => p.id) } },
+        json: { ...form, products: { ...form.products, photoIds: photos.map((p) => p.id), dataFileIds: dataFiles.map((f) => f.id) } },
       });
       try {
         localStorage.removeItem(DRAFT_KEY);
@@ -355,6 +382,28 @@ export default function ApplyPage() {
                 )}
                 {photos.length < 5 && (
                   <input id="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(e) => void addPhotos(e.target.files)} />
+                )}
+              </div>
+              <div className="field">
+                <label htmlFor="productFiles">Product list or data sheets (optional, up to 5 files)</label>
+                <p className="hint">
+                  A product feed, price list or product data sheets (Produktdatenblätter). PDF, CSV, Excel or images, up to 8 MB
+                  each. If you are approved, this helps us set up your products faster.
+                </p>
+                {dataFiles.length > 0 && (
+                  <ul className="list-plain">
+                    {dataFiles.map((f) => (
+                      <li key={f.id} className="row">
+                        <span>{f.name}</span>
+                        <button type="button" className="link-button" onClick={() => setDataFiles(dataFiles.filter((x) => x.id !== f.id))}>
+                          Remove
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {dataFiles.length < 5 && (
+                  <input id="productFiles" type="file" accept={PRODUCT_FILE_TYPES} multiple onChange={(e) => void addDataFiles(e.target.files)} />
                 )}
               </div>
               <div className="form-grid">

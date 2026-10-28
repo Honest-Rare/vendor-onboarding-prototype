@@ -65,7 +65,7 @@ function Input({
       ) : (
         <input
           id={id}
-          type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'}
+          type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : field.type === 'email' ? 'email' : 'text'}
           step={field.type === 'number' ? 'any' : undefined}
           value={value ?? ''}
           disabled={disabled}
@@ -147,6 +147,9 @@ export default function SectionPage() {
       <p className="muted" style={{ margin: 0 }}>
         {section.description}
       </p>
+      {section.requiredBefore === 'first_payout' && (
+        <div className="alert alert-info small">You can go live without this. We need it before your first payout.</div>
+      )}
 
       {section.status === 'changes_requested' && section.adminNote && (
         <div className="alert alert-warn" role="status">

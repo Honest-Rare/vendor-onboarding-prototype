@@ -140,6 +140,9 @@ tbody tr:hover { background: #fafbfa; }
 dl.facts { display: grid; grid-template-columns: minmax(120px, 200px) 1fr; gap: 8px 16px; margin: 0; }
 dl.facts dt { color: var(--muted); font-size: 0.9rem; }
 dl.facts dd { margin: 0; overflow-wrap: anywhere; }
+.detail-side dl.facts { grid-template-columns: 1fr; gap: 2px 0; }
+.detail-side dl.facts dt { margin-top: 8px; }
+.detail-side dl.facts dt:first-of-type { margin-top: 0; }
 .list-plain { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
 .check-item { display: flex; gap: 12px; align-items: flex-start; }
 .check-item .badge { flex: none; min-width: 72px; text-align: center; }

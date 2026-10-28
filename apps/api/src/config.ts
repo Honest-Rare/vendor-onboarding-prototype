@@ -22,6 +22,8 @@ export const config = {
   uploadDir: process.env.UPLOAD_DIR ?? './data/uploads',
 
   // Placeholder values until the open questions in the PRD are decided.
+  /** Version of the vendor terms applicants accept. Change it whenever the terms text changes. */
+  termsVersion: process.env.TERMS_VERSION ?? 'draft-1',
   tokenTtlHours: {
     confirm_email: 72,
     answer_question: 24 * 14,

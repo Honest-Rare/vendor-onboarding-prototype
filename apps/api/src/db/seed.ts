@@ -39,8 +39,8 @@ async function main() {
         );
         photoIds.push(saved.id);
       }
-      const data = { ...fixture.data, products: { ...fixture.data.products, photoIds }, fixture: fixture.key };
-      const id = await repo.insertApplication(data);
+      const data = { ...fixture.data, products: { ...fixture.data.products, photoIds, dataFileIds: [] }, fixture: fixture.key };
+      const id = await repo.insertApplication(data, config.termsVersion);
       await files.assignOwner(photoIds, id);
       await repo.setApplicationStatus(id, 'submitted');
       await repo.logEvent({ subjectType: 'application', subjectId: id, to: 'submitted', actor: 'seed', reason: 'Fictional test application' });

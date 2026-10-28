@@ -25,6 +25,9 @@ export interface ApplicationRow {
   updated_at: Date;
   submitted_at: Date | null;
   decided_at: Date | null;
+  terms_version: string | null;
+  terms_accepted_at: Date | null;
+  legal_self_certified_at: Date | null;
 }
 
 export interface CheckRow {
@@ -44,6 +47,26 @@ export interface VendorRow {
   stripe_account_id: string | null;
   created_at: Date;
   live_at: Date | null;
+  legal_name: string;
+  vat_id: string | null;
+  tax_number: string | null;
+  street: string | null;
+  postcode: string | null;
+  city: string | null;
+  country: string;
+  slug: string;
+  pre_moderation: boolean;
+}
+
+export interface NewVendor {
+  applicationId: string;
+  userId: string;
+  shopName: string;
+  legalName: string;
+  vatId: string | null;
+  taxNumber: string | null;
+  address: { street: string; postcode: string; city: string };
+  country: string;
 }
 
 export interface SectionRow {
@@ -74,11 +97,13 @@ export class VendorsRepository {
 
   // Applications ----------------------------------------------------------
 
-  async insertApplication(data: ApplicationData & { fixture?: string }, client: DbClient = this.db): Promise<string> {
+  /** The schema only lets an application through with both boxes ticked, so both confirmations are dated now. */
+  async insertApplication(data: ApplicationData & { fixture?: string }, termsVersion: string, client: DbClient = this.db): Promise<string> {
     const { rows } = await client.query<{ id: string }>(
       `insert into vendors.applications
-         (status, email, shop_name, legal_name, business_type, country, vat_id, phone, website, categories, data)
-       values ('email_unconfirmed', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         (status, email, shop_name, legal_name, business_type, country, vat_id, phone, website, categories, data,
+          terms_version, terms_accepted_at, legal_self_certified_at)
+       values ('email_unconfirmed', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now(), now())
        returning id`,
       [
         data.contact.email.toLowerCase(),
@@ -91,6 +116,7 @@ export class VendorsRepository {
         normalizeWebsite(data.contact.website),
         data.products.categories,
         JSON.stringify(data),
+        termsVersion,
       ],
     );
     return rows[0].id;
@@ -212,12 +238,45 @@ export class VendorsRepository {
 
   // Vendors and sections --------------------------------------------------
 
-  async insertVendor(v: { applicationId: string; userId: string; shopName: string }, client: DbClient): Promise<string> {
+  async insertVendor(v: NewVendor, client: DbClient): Promise<string> {
+    const slug = await this.uniqueSlug(slugify(v.shopName), client);
     const { rows } = await client.query<{ id: string }>(
-      `insert into vendors.vendors (application_id, user_id, shop_name, status) values ($1, $2, $3, 'onboarding') returning id`,
-      [v.applicationId, v.userId, v.shopName],
+      `insert into vendors.vendors
+         (application_id, user_id, shop_name, status, legal_name, vat_id, tax_number, street, postcode, city, country, slug)
+       values ($1, $2, $3, 'onboarding', $4, $5, $6, $7, $8, $9, $10, $11)
+       returning id`,
+      [
+        v.applicationId,
+        v.userId,
+        v.shopName,
+        v.legalName,
+        v.vatId,
+        v.taxNumber,
+        v.address.street,
+        v.address.postcode,
+        v.address.city,
+        v.country,
+        slug,
+      ],
     );
     return rows[0].id;
+  }
+
+  /** "brennerei-kellerwald", or "brennerei-kellerwald-2" if that is taken. */
+  private async uniqueSlug(base: string, client: DbClient): Promise<string> {
+    const { rows } = await client.query<{ slug: string }>(
+      `select slug from vendors.vendors where slug = $1 or slug ~ ('^' || $1 || '-[0-9]+$')`,
+      [base],
+    );
+    const taken = new Set(rows.map((r) => r.slug));
+    if (!taken.has(base)) return base;
+    let n = 2;
+    while (taken.has(`${base}-${n}`)) n++;
+    return `${base}-${n}`;
+  }
+
+  async setPreModeration(vendorId: string, enabled: boolean, client: DbClient = this.db) {
+    await client.query('update vendors.vendors set pre_moderation = $2, updated_at = now() where id = $1', [vendorId, enabled]);
   }
 
   async insertSections(vendorId: string, keys: string[], client: DbClient) {
@@ -323,6 +382,21 @@ export class VendorsRepository {
     );
     return rows;
   }
+}
+
+/** Lowercase ASCII with dashes; German umlauts are spelled out. Only [a-z0-9-], so it is safe inside a regex. */
+export function slugify(value: string): string {
+  const slug = value
+    .toLowerCase()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
+    .normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return slug || 'shop';
 }
 
 export function normalizeWebsite(value: string): string | null {

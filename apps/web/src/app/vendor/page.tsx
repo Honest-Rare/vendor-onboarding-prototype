@@ -110,7 +110,7 @@ function Checklist() {
         </div>
         {vendor.status === 'ready' && (
           <div className="row">
-            <p style={{ margin: 0 }}>Every section is approved. Put your shop live whenever you are ready.</p>
+            <p style={{ margin: 0 }}>Every section needed to go live is approved. Put your shop live whenever you are ready.</p>
             <button type="button" className="btn btn-primary" disabled={busy} onClick={() => void goLive()}>
               Go live
             </button>
@@ -140,6 +140,7 @@ function Checklist() {
                 <td>
                   <strong>{s.title}</strong>
                   <div className="muted small">{s.description}</div>
+                  {s.requiredBefore === 'first_payout' && <div className="small">Not needed to go live; needed before your first payout.</div>}
                 </td>
                 <td>
                   <StatusBadge map={SECTION_STATUS} value={s.status} />

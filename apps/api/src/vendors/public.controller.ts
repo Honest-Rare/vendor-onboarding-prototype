@@ -30,6 +30,13 @@ export class PublicController {
     return this.files.save(file, 'application', null);
   }
 
+  @Post('product-data')
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: MAX_FILE_BYTES } }))
+  async uploadProductData(@Req() req: Request, @UploadedFile() file: Express.Multer.File) {
+    uploadLimiter.check(req, 'photos');
+    return this.files.save(file, 'application', null, { spreadsheets: true });
+  }
+
   @Post()
   async submit(@Req() req: Request, @Body() body: unknown) {
     submitLimiter.check(req, 'submit');

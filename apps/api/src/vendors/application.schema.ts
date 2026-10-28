@@ -38,6 +38,8 @@ export const applicationSchema = z
       makesOwnProducts: z.enum(['yes', 'partly', 'no']),
       story: z.string().trim().min(80, 'Tell us a bit more (at least 80 characters)').max(3000),
       photoIds: z.array(z.uuid()).min(3, 'Add at least 3 photos').max(5, 'Add at most 5 photos'),
+      // Product feed, price list or data sheets, to bootstrap the catalogue after approval.
+      dataFileIds: z.array(z.uuid()).max(5, 'Add at most 5 product files').default([]),
       productCount: required(40, 'Number of products'),
       priceRange: required(40, 'Price range'),
       whereSoldToday: text(500).default(''),

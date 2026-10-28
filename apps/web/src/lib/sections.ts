@@ -1,7 +1,7 @@
 export type FieldDef = {
   key: string;
   label: string;
-  type: 'text' | 'textarea' | 'select' | 'number' | 'date' | 'checkbox' | 'document';
+  type: 'text' | 'textarea' | 'select' | 'number' | 'date' | 'checkbox' | 'document' | 'email';
   required: boolean;
   help?: string;
   options?: Array<{ value: string; label: string }>;
@@ -12,7 +12,8 @@ export type Section = {
   title: string;
   description: string;
   reviewer: 'admin' | 'stripe';
-  status: 'not_started' | 'submitted' | 'approved' | 'changes_requested';
+  requiredBefore: 'go_live' | 'first_payout';
+  status:'not_started' | 'submitted' | 'approved' | 'changes_requested';
   adminNote: string | null;
   updatedAt: string | null;
   reviewedAt: string | null;

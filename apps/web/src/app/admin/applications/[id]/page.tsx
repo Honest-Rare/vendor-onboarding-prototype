@@ -25,6 +25,8 @@ type Detail = {
   submittedAt: string | null;
   data: any;
   photos: Array<{ id: string; name: string }>;
+  dataFiles: Array<{ id: string; name: string }>;
+  terms: { version: string | null; acceptedAt: string | null; legalSelfCertifiedAt: string | null };
   rules: Check;
   ai: Check;
   questions: Array<{ id: string; question: string; answer: string | null; asked_at: string; answered_at: string | null }>;
@@ -160,6 +162,14 @@ export default function ApplicationPage() {
               <dd>{d.products.whereSoldToday || '—'}</dd>
               <dt>Plan</dt>
               <dd>{PLANS[d.agreement.plan]?.name ?? d.agreement.plan}</dd>
+              <dt>Vendor terms</dt>
+              <dd>
+                {data.terms.acceptedAt
+                  ? `Accepted ${formatDate(data.terms.acceptedAt)}${data.terms.version ? `, version ${data.terms.version}` : ''}`
+                  : '—'}
+              </dd>
+              <dt>Legal confirmation</dt>
+              <dd>{data.terms.legalSelfCertifiedAt ? `Confirmed ${formatDate(data.terms.legalSelfCertifiedAt)}` : '—'}</dd>
             </dl>
             <h3 style={{ marginTop: 16 }}>Their story</h3>
             <p style={{ whiteSpace: 'pre-line' }}>{d.products.story}</p>
@@ -171,6 +181,20 @@ export default function ApplicationPage() {
                 </a>
               ))}
             </div>
+            {data.dataFiles.length > 0 && (
+              <>
+                <h3>Product files</h3>
+                <ul className="list-plain">
+                  {data.dataFiles.map((f) => (
+                    <li key={f.id}>
+                      <a href={`/api/files/${f.id}`} target="_blank" rel="noreferrer">
+                        {f.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </section>
 
           {/* 2. Rules: facts --------------------------------------------------- */}

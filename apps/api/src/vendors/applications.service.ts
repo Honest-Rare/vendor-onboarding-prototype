@@ -63,10 +63,12 @@ export class ApplicationsService implements OnModuleInit {
   async submit(data: ApplicationData): Promise<{ id: string }> {
     const photos = await this.files.getMany(data.products.photoIds);
     if (photos.length !== data.products.photoIds.length) throw new BadRequestException('Some photos could not be found. Upload them again.');
+    const dataFiles = await this.files.getMany(data.products.dataFileIds);
+    if (dataFiles.length !== data.products.dataFileIds.length) throw new BadRequestException('Some product files could not be found. Upload them again.');
 
     return withTransaction(this.repo.db, async (client) => {
-      const id = await this.repo.insertApplication(data, client);
-      await this.files.assignOwner(data.products.photoIds, id, client);
+      const id = await this.repo.insertApplication(data, config.termsVersion, client);
+      await this.files.assignOwner([...data.products.photoIds, ...data.products.dataFileIds], id, client);
       await this.repo.logEvent({ subjectType: 'application', subjectId: id, to: 'email_unconfirmed', actor: 'applicant' }, client);
       const token = await this.accounts.issueToken('confirm_email', id, client);
       await this.notifications.send(
@@ -235,7 +237,10 @@ export class ApplicationsService implements OnModuleInit {
       submittedAt: app.submitted_at,
       decidedAt: app.decided_at,
       data: app.data,
+      terms: { version: app.terms_version, acceptedAt: app.terms_accepted_at, legalSelfCertifiedAt: app.legal_self_certified_at },
       photos: await this.files.getMany(app.data.products.photoIds),
+      // Applications sent before product files existed have no dataFileIds.
+      dataFiles: await this.files.getMany(app.data.products.dataFileIds ?? []),
       rules: checks.find((c) => c.kind === 'rules') ?? null,
       ai: checks.find((c) => c.kind === 'ai') ?? null,
       questions: await this.repo.listQuestions(id),
@@ -255,7 +260,19 @@ export class ApplicationsService implements OnModuleInit {
 
       const name = `${app.data.contact.firstName} ${app.data.contact.lastName}`;
       const userId = await this.accounts.createVendorUser(app.email, name, client);
-      const vendorId = await this.repo.insertVendor({ applicationId: id, userId, shopName: app.shop_name }, client);
+      const vendorId = await this.repo.insertVendor(
+        {
+          applicationId: id,
+          userId,
+          shopName: app.shop_name,
+          legalName: app.legal_name,
+          vatId: app.vat_id,
+          taxNumber: app.data.business.taxNumber || null,
+          address: app.data.business.address,
+          country: app.country,
+        },
+        client,
+      );
       const flags = this.rules.categoryFlags(app.categories);
       const sections = sectionsFor({ categories: app.categories, ...flags, businessType: app.business_type });
       await this.repo.insertSections(vendorId, sections.map((s) => s.key), client);

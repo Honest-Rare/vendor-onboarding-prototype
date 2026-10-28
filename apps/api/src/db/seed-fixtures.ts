@@ -1,7 +1,7 @@
 import type { ApplicationData } from '../vendors/application.schema.js';
 
 /** Fictional applications. Every name, address, number and website here is invented (.example domains). */
-export const FIXTURES: Array<{ key: string; colors: string[]; data: Omit<ApplicationData, 'products'> & { products: Omit<ApplicationData['products'], 'photoIds'> } }> = [
+export const FIXTURES: Array<{ key: string; colors: string[]; data: Omit<ApplicationData, 'products'> & { products: Omit<ApplicationData['products'], 'photoIds' | 'dataFileIds'> } }> = [
   {
     key: 'kellerwald',
     colors: ['#7a4b2a', '#c99a4e', '#3f5e3a'],

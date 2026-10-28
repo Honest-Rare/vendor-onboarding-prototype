@@ -74,7 +74,7 @@ email address: the confirmation email arrives in the test inbox.
 ## Placeholders (see the PRD's open questions)
 
 - Link expiry times: email confirmation 3 days, question 14 days, set password 3 days (`apps/api/src/config.ts`)
-- Plan names, commission and limits; vendor terms and privacy texts
+- Plan names, commission and limits; vendor terms and privacy texts. The accepted terms version is `TERMS_VERSION` in `.env`.
 - German language: built for, switched off
 - "Not mainstream" has no fixed line yet; the AI only reports evidence
 

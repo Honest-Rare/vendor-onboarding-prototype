@@ -6,6 +6,12 @@ import { config } from '../config.js';
 import { PG_POOL, type Db } from './database.js';
 
 const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'application/pdf']);
+/** Product feeds and price lists. Browsers report CSV as text/csv or, on Windows with Excel, application/vnd.ms-excel. */
+export const SPREADSHEET_TYPES = new Set([
+  'text/csv',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+]);
 export const MAX_FILE_BYTES = 8 * 1024 * 1024;
 
 export interface StoredFile {
@@ -27,9 +33,15 @@ export class FilesService {
     file: { buffer: Buffer; originalname: string; mimetype: string; size: number } | undefined,
     ownerType: 'application' | 'vendor',
     ownerRef: string | null,
+    options: { spreadsheets?: boolean } = {},
   ): Promise<{ id: string; name: string }> {
     if (!file) throw new BadRequestException('No file received');
-    if (!ALLOWED_TYPES.has(file.mimetype)) throw new BadRequestException('Only JPG, PNG, WebP or PDF files are allowed');
+    const allowed = ALLOWED_TYPES.has(file.mimetype) || (options.spreadsheets === true && SPREADSHEET_TYPES.has(file.mimetype));
+    if (!allowed) {
+      throw new BadRequestException(
+        options.spreadsheets ? 'Only PDF, CSV, Excel, JPG, PNG or WebP files are allowed' : 'Only JPG, PNG, WebP or PDF files are allowed',
+      );
+    }
     if (file.size > MAX_FILE_BYTES) throw new BadRequestException('File is larger than 8 MB');
 
     const id = randomUUID();
