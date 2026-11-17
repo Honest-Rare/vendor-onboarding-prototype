@@ -12,7 +12,7 @@ export default function AdminLoginPage() {
         <LoginForm role="admin" home="/admin" />
       </Suspense>
       <SimulatedNote>
-        Prototype: the admin login is ADMIN_EMAIL and ADMIN_PASSWORD from the .env file. Production uses single sign-on.
+        Prototype: any email and password sign you in. Production uses single sign-on.
       </SimulatedNote>
     </div>
   );

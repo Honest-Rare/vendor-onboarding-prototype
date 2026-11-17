@@ -72,3 +72,36 @@ export const PLANS: Record<string, { name: string; detail: string }> = {
   starter: { name: 'Starter', detail: '[Commission and limits to be confirmed]' },
   professional: { name: 'Professional', detail: '[Commission and limits to be confirmed]' },
 };
+
+// Apply step 4 "Our standards". [Mock questions, to be confirmed]
+export const MADE_WHERE: Record<string, string> = {
+  own: 'All in our own workshop, brewery, distillery or kitchen in the EU',
+  partner: 'Mostly by us, some steps by a partner in the EU (for example bottling)',
+  contract: 'Made for us by a contract producer',
+};
+
+export const RETAIL_CHAINS: Record<string, string> = {
+  no: 'No, only through our own channels and small shops',
+  regional: 'In a few regional shops or delicatessens',
+  national: 'Yes, in one or more national chains',
+};
+
+export const YEARLY_VOLUME: Record<string, string> = {
+  under_1k: 'Under 1,000 bottles or units',
+  '1k_10k': '1,000 to 10,000',
+  '10k_100k': '10,000 to 100,000',
+  over_100k: 'Over 100,000',
+};
+
+export const ADDITIVES: Record<string, string> = {
+  none: 'No, only natural ingredients',
+  some: 'Some products do',
+  yes: 'Yes',
+};
+
+export const CERTIFICATIONS: Record<string, string> = {
+  eu_organic: 'EU organic',
+  demeter_bioland: 'Demeter or Bioland',
+  protected_origin: 'Protected origin (PDO or PGI)',
+  awards: 'Awards or medals',
+};

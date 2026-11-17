@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { ErrorBox, Field, Loading, StatusBadge } from '@/components/ui';
-import { api, ApiError, formatDate, useLoad } from '@/lib/api';
+import { api, ApiError, fileUrl, formatDate, useLoad } from '@/lib/api';
 import { CATEGORY_LABELS, SECTION_STATUS, VENDOR_STATUS } from '@/lib/labels';
 import { displayValue, type Gate, type Section } from '@/lib/sections';
 
@@ -78,7 +78,7 @@ function SectionReview({ vendorId, section, onDone }: { vendorId: string; sectio
               <dt>{f.label}</dt>
               <dd style={{ whiteSpace: 'pre-line' }}>
                 {f.type === 'document' && section.data[f.key] ? (
-                  <a href={`/api/files/${section.data[f.key]}`} target="_blank" rel="noreferrer">
+                  <a href={fileUrl(section.data[f.key])} target="_blank" rel="noreferrer">
                     {displayValue(f, section.data[f.key], section.files)}
                   </a>
                 ) : (

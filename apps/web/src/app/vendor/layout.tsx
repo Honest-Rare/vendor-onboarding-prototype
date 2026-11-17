@@ -1,10 +1,14 @@
+'use client';
+
+import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { PanelShell } from '@/components/PanelShell';
+import { VendorShell } from '@/components/VendorShell';
+
+/** Sign-in and set-password stand on their own; every other vendor page gets the sidebar. */
+const STANDALONE = ['/vendor/login', '/vendor/set-password', '/vendor/stripe-simulated'];
 
 export default function VendorLayout({ children }: { children: ReactNode }) {
-  return (
-    <PanelShell area="Vendor panel" loginPath="/vendor/login" nav={[{ href: '/vendor', label: 'Shop setup' }]}>
-      {children}
-    </PanelShell>
-  );
+  const pathname = usePathname();
+  if (STANDALONE.some((p) => pathname.startsWith(p))) return <>{children}</>;
+  return <VendorShell>{children}</VendorShell>;
 }

@@ -1,0 +1,1002 @@
+[
+  {
+    "id": "app-kellerwald",
+    "status": "in_review",
+    "createdAgoMs": 259260000,
+    "submittedAgoMs": 259200000,
+    "data": {
+      "contact": {
+        "role": "Owner and distiller",
+        "email": "hello@kellerwald-brennerei.example",
+        "phone": "+49 5626 123456",
+        "website": "kellerwald-brennerei.example",
+        "lastName": "Hessler",
+        "firstName": "Marta",
+        "socialLinks": ""
+      },
+      "business": {
+        "type": "sole_trader",
+        "vatId": "DE123456789",
+        "address": {
+          "city": "Bad Zwesten",
+          "street": "Dorfstraße 12",
+          "postcode": "34596"
+        },
+        "country": "DE",
+        "shopName": "Brennerei Kellerwald",
+        "legalName": "Brennerei Kellerwald, Inh. Marta Hessler",
+        "taxNumber": "",
+        "registerCourt": "",
+        "registerNumber": ""
+      },
+      "products": {
+        "story": "We are a family distillery in the Kellerwald hills. Since 1987 we distil fruit brandies from the apples, pears and plums of our own orchards, and since 2019 a dry gin with juniper and herbs we pick ourselves. Every batch is small, bottled by hand and numbered. We add no flavourings and no sugar.",
+        "photoIds": [
+          "kellerwald-01.jpg",
+          "kellerwald-02.jpg",
+          "kellerwald-03.jpg",
+          "kellerwald-04.jpg"
+        ],
+        "categories": [
+          "spirits"
+        ],
+        "priceRange": "€24 to €58",
+        "productCount": "8",
+        "whereSoldToday": "Our farm shop and two regional markets in northern Hesse",
+        "makesOwnProducts": "yes"
+      },
+      "agreement": {
+        "plan": "professional",
+        "language": "en",
+        "acceptTerms": true,
+        "legalSelfCertification": true
+      }
+    },
+    "photos": [
+      {
+        "id": "kellerwald-01.jpg",
+        "name": "01-heidegin-bottle.jpg"
+      },
+      {
+        "id": "kellerwald-02.jpg",
+        "name": "02-range-lineup.jpg"
+      },
+      {
+        "id": "kellerwald-03.jpg",
+        "name": "03-heather-syrup.jpg"
+      },
+      {
+        "id": "kellerwald-04.jpg",
+        "name": "04-copper-still.jpg"
+      }
+    ],
+    "dataFiles": [],
+    "terms": {
+      "version": null
+    },
+    "rules": {
+      "status": "done",
+      "result": [
+        {
+          "code": "eu_registered",
+          "label": "Registered in the EU",
+          "detail": "Germany",
+          "outcome": "pass"
+        },
+        {
+          "code": "vat",
+          "label": "VAT ID (EU VIES)",
+          "detail": "Format is valid. Live VIES check is switched off.",
+          "outcome": "unknown"
+        },
+        {
+          "code": "duplicates",
+          "label": "Duplicate check",
+          "detail": "No matches with other applications or vendors.",
+          "outcome": "pass"
+        },
+        {
+          "code": "email_domain",
+          "label": "Email domain",
+          "detail": "kellerwald-brennerei.example",
+          "outcome": "pass"
+        },
+        {
+          "code": "phone",
+          "label": "Phone format",
+          "detail": "+495626123456",
+          "outcome": "pass"
+        },
+        {
+          "code": "website",
+          "label": "Website reachable",
+          "detail": "https://kellerwald-brennerei.example answered 200.",
+          "outcome": "pass"
+        },
+        {
+          "code": "address",
+          "label": "Business address",
+          "detail": "Street address given.",
+          "outcome": "pass"
+        },
+        {
+          "code": "register",
+          "label": "Trade register",
+          "detail": "Not a company; no register entry expected.",
+          "outcome": "info"
+        }
+      ],
+      "error": null
+    },
+    "ai": {
+      "status": "done",
+      "result": {
+        "flags": [
+          {
+            "title": "Spirits",
+            "detail": "Needs alcohol tax status and 18+ delivery during setup.",
+            "source": "application",
+            "severity": "info"
+          }
+        ],
+        "model": "none",
+        "summary": "Small family distillery in Hesse distilling fruit brandies and gin from its own orchards. Website and story match; no sign of mainstream retail. Spirits seller, so alcohol tax status is needed after approval.",
+        "criteria": [
+          {
+            "note": "Distils on site in Kellerwald, Hesse; fruit from own orchards.",
+            "source": "https://kellerwald-brennerei.example/about",
+            "criterion": "regional",
+            "assessment": "evidence_found"
+          },
+          {
+            "note": "Sold at the farm shop and two regional markets only.",
+            "source": "application",
+            "criterion": "not_mainstream",
+            "assessment": "evidence_found"
+          },
+          {
+            "note": "Small batches, numbered bottles, regional spirits awards mentioned.",
+            "source": "https://kellerwald-brennerei.example/about",
+            "criterion": "quality",
+            "assessment": "evidence_found"
+          },
+          {
+            "note": "\"No added flavourings or sugar\" stated on the gin page.",
+            "source": "https://kellerwald-brennerei.example/gin",
+            "criterion": "natural",
+            "assessment": "evidence_found"
+          }
+        ],
+        "provider": "simulated",
+        "simulated": true,
+        "confidence": 0.86,
+        "promptVersion": "vendor-screening-v1",
+        "recommendation": "approve",
+        "sourcesChecked": [
+          "https://kellerwald-brennerei.example",
+          "https://kellerwald-brennerei.example/about",
+          "https://kellerwald-brennerei.example/gin"
+        ]
+      },
+      "error": null
+    },
+    "questions": [],
+    "events": [
+      {
+        "to_status": "email_unconfirmed",
+        "actor": "applicant",
+        "agoMs": 259260000
+      },
+      {
+        "to_status": "submitted",
+        "actor": "applicant",
+        "agoMs": 259200000
+      },
+      {
+        "to_status": "in_review",
+        "actor": "system",
+        "agoMs": 259140000
+      }
+    ]
+  },
+  {
+    "id": "app-collina-verde",
+    "status": "in_review",
+    "createdAgoMs": 259260000,
+    "submittedAgoMs": 259200000,
+    "data": {
+      "contact": {
+        "role": "Managing director",
+        "email": "info@collinaverde.example",
+        "phone": "+39 0173 123456",
+        "website": "collinaverde.example",
+        "lastName": "Ferraro",
+        "firstName": "Giulia",
+        "socialLinks": ""
+      },
+      "business": {
+        "type": "company",
+        "vatId": "IT01234567890",
+        "address": {
+          "city": "Alba",
+          "street": "Via delle Vigne 4",
+          "postcode": "12051"
+        },
+        "country": "IT",
+        "shopName": "Collina Verde",
+        "legalName": "Cantina Collina Verde S.r.l.",
+        "taxNumber": "",
+        "registerCourt": "Cuneo",
+        "registerNumber": "CN-123456"
+      },
+      "products": {
+        "story": "Collina Verde is a family winery on the hills near Alba in Piedmont. We farm six hectares organically and harvest by hand. We make Barbera, Nebbiolo and a little Arneis, about 12,000 bottles a year, aged in our own cellar.",
+        "photoIds": [
+          "71f034c5-bc41-4db0-8393-e7c6a3df5867.png",
+          "4b89226a-4405-489d-ba33-356e297f47b6.png",
+          "7107a531-ff5a-42f4-b278-d6cc0c59c7ed.png"
+        ],
+        "categories": [
+          "wine"
+        ],
+        "priceRange": "€14 to €32",
+        "productCount": "6",
+        "whereSoldToday": "Cellar door and a few wine bars in Turin",
+        "makesOwnProducts": "yes"
+      },
+      "agreement": {
+        "plan": "starter",
+        "language": "en",
+        "acceptTerms": true,
+        "legalSelfCertification": true
+      }
+    },
+    "photos": [
+      {
+        "id": "71f034c5-bc41-4db0-8393-e7c6a3df5867.png",
+        "name": "collinaverde-1.png"
+      },
+      {
+        "id": "4b89226a-4405-489d-ba33-356e297f47b6.png",
+        "name": "collinaverde-2.png"
+      },
+      {
+        "id": "7107a531-ff5a-42f4-b278-d6cc0c59c7ed.png",
+        "name": "collinaverde-3.png"
+      }
+    ],
+    "dataFiles": [],
+    "terms": {
+      "version": null
+    },
+    "rules": {
+      "status": "done",
+      "result": [
+        {
+          "code": "eu_registered",
+          "label": "Registered in the EU",
+          "detail": "Italy",
+          "outcome": "pass"
+        },
+        {
+          "code": "vat",
+          "label": "VAT ID (EU VIES)",
+          "detail": "Format is valid. Live VIES check is switched off.",
+          "outcome": "unknown"
+        },
+        {
+          "code": "duplicates",
+          "label": "Duplicate check",
+          "detail": "No matches with other applications or vendors.",
+          "outcome": "pass"
+        },
+        {
+          "code": "email_domain",
+          "label": "Email domain",
+          "detail": "collinaverde.example",
+          "outcome": "pass"
+        },
+        {
+          "code": "phone",
+          "label": "Phone format",
+          "detail": "+390173123456",
+          "outcome": "pass"
+        },
+        {
+          "code": "website",
+          "label": "Website reachable",
+          "detail": "https://collinaverde.example answered 200.",
+          "outcome": "pass"
+        },
+        {
+          "code": "address",
+          "label": "Business address",
+          "detail": "Street address given.",
+          "outcome": "pass"
+        },
+        {
+          "code": "register",
+          "label": "Trade register",
+          "detail": "CN-123456 given. Register lookup is not automated yet.",
+          "outcome": "unknown"
+        }
+      ],
+      "error": null
+    },
+    "ai": {
+      "status": "done",
+      "result": {
+        "flags": [
+          {
+            "title": "Organic claim",
+            "detail": "\"Organic\" is mentioned; the certification body code is needed during setup.",
+            "source": "https://collinaverde.example/wines",
+            "severity": "info"
+          }
+        ],
+        "model": "none",
+        "summary": "Organic-certified family winery in Piedmont making about 12,000 bottles a year. Strong fit; the website lists no ingredients, which is normal for wine. Organic claim needs the certificate during setup.",
+        "criteria": [
+          {
+            "note": "Own vineyards near Alba, Piedmont (Italy).",
+            "source": "https://collinaverde.example",
+            "criterion": "regional",
+            "assessment": "evidence_found"
+          },
+          {
+            "note": "Sold through the cellar door and a few wine bars in Turin.",
+            "source": "application",
+            "criterion": "not_mainstream",
+            "assessment": "evidence_found"
+          },
+          {
+            "note": "Hand-harvested, about 12,000 bottles a year.",
+            "source": "https://collinaverde.example/wines",
+            "criterion": "quality",
+            "assessment": "evidence_found"
+          },
+          {
+            "note": "No ingredient or additive information on the website (not required for wine).",
+            "criterion": "natural",
+            "assessment": "no_information"
+          }
+        ],
+        "provider": "simulated",
+        "simulated": true,
+        "confidence": 0.74,
+        "promptVersion": "vendor-screening-v1",
+        "recommendation": "approve",
+        "sourcesChecked": [
+          "https://collinaverde.example",
+          "https://collinaverde.example/wines"
+        ]
+      },
+      "error": null
+    },
+    "questions": [],
+    "events": [
+      {
+        "to_status": "email_unconfirmed",
+        "actor": "applicant",
+        "agoMs": 259260000
+      },
+      {
+        "to_status": "submitted",
+        "actor": "applicant",
+        "agoMs": 259200000
+      },
+      {
+        "to_status": "in_review",
+        "actor": "system",
+        "agoMs": 259140000
+      }
+    ]
+  },
+  {
+    "id": "app-global-spirits",
+    "status": "in_review",
+    "createdAgoMs": 172860000,
+    "submittedAgoMs": 172800000,
+    "data": {
+      "contact": {
+        "role": "Sales manager",
+        "email": "sales@globalspirits-trading.example",
+        "phone": "+44 20 7946 0000",
+        "website": "globalspirits-trading.example",
+        "lastName": "Reed",
+        "firstName": "Tom",
+        "socialLinks": ""
+      },
+      "business": {
+        "type": "company",
+        "vatId": "GB123456789",
+        "address": {
+          "city": "London",
+          "street": "1 Dock Road",
+          "postcode": "E16 2AA"
+        },
+        "country": "GB",
+        "shopName": "Global Spirits",
+        "legalName": "Global Spirits Trading Ltd",
+        "taxNumber": "",
+        "registerCourt": "Companies House",
+        "registerNumber": "01234567"
+      },
+      "products": {
+        "story": "We import and distribute a wide range of spirits brands from around the world at competitive wholesale prices. Our portfolio covers whisky, gin, rum and liqueurs, and we can supply large volumes quickly.",
+        "photoIds": [
+          "638755ea-eb26-4518-8b50-fa8fbdb9c58a.png",
+          "52d40751-f4d4-4960-b2cf-da716f4e26b5.png",
+          "ae00c3e9-9120-4a3c-956e-9352775fac34.png"
+        ],
+        "categories": [
+          "spirits"
+        ],
+        "priceRange": "€9 to €40",
+        "productCount": "120",
+        "whereSoldToday": "UK supermarkets and wholesale",
+        "makesOwnProducts": "partly"
+      },
+      "agreement": {
+        "plan": "professional",
+        "language": "en",
+        "acceptTerms": true,
+        "legalSelfCertification": true
+      }
+    },
+    "photos": [
+      {
+        "id": "638755ea-eb26-4518-8b50-fa8fbdb9c58a.png",
+        "name": "globalspirits-1.png"
+      },
+      {
+        "id": "52d40751-f4d4-4960-b2cf-da716f4e26b5.png",
+        "name": "globalspirits-2.png"
+      },
+      {
+        "id": "ae00c3e9-9120-4a3c-956e-9352775fac34.png",
+        "name": "globalspirits-3.png"
+      }
+    ],
+    "dataFiles": [],
+    "terms": {
+      "version": null
+    },
+    "rules": {
+      "status": "done",
+      "result": [
+        {
+          "code": "eu_registered",
+          "label": "Registered in the EU",
+          "detail": "Registered in GB, outside the EU. Our criteria ask for EU-based producers.",
+          "outcome": "fail"
+        },
+        {
+          "code": "vat",
+          "label": "VAT ID (EU VIES)",
+          "detail": "A GB VAT ID cannot be checked in the EU VIES register.",
+          "outcome": "fail"
+        },
+        {
+          "code": "duplicates",
+          "label": "Duplicate check",
+          "detail": "No matches with other applications or vendors.",
+          "outcome": "pass"
+        },
+        {
+          "code": "email_domain",
+          "label": "Email domain",
+          "detail": "globalspirits-trading.example",
+          "outcome": "pass"
+        },
+        {
+          "code": "phone",
+          "label": "Phone format",
+          "detail": "+442079460000",
+          "outcome": "pass"
+        },
+        {
+          "code": "website",
+          "label": "Website reachable",
+          "detail": "https://globalspirits-trading.example answered 200.",
+          "outcome": "pass"
+        },
+        {
+          "code": "address",
+          "label": "Business address",
+          "detail": "Street address given.",
+          "outcome": "pass"
+        },
+        {
+          "code": "register",
+          "label": "Trade register",
+          "detail": "01234567 given. Register lookup is not automated yet.",
+          "outcome": "unknown"
+        }
+      ],
+      "error": null
+    },
+    "ai": {
+      "status": "done",
+      "result": {
+        "flags": [
+          {
+            "title": "Reseller",
+            "detail": "Applicant states they \"partly\" make products; website describes import and distribution only.",
+            "source": "https://globalspirits-trading.example",
+            "severity": "critical"
+          },
+          {
+            "title": "Outside the EU",
+            "detail": "Registered in the United Kingdom.",
+            "source": "application",
+            "severity": "warning"
+          }
+        ],
+        "model": "none",
+        "summary": "Trading company in the UK importing and reselling branded spirits. Does not make its own products, is registered outside the EU, and its brands are sold in national supermarket chains.",
+        "criteria": [
+          {
+            "note": "Registered in the UK; products come from several countries.",
+            "source": "application",
+            "criterion": "regional",
+            "assessment": "concerns_found"
+          },
+          {
+            "note": "\"Available in Tesco and Sainsbury's nationwide.\"",
+            "source": "https://globalspirits-trading.example/brands",
+            "criterion": "not_mainstream",
+            "assessment": "concerns_found"
+          },
+          {
+            "note": "Focus is on volume and wholesale prices.",
+            "criterion": "quality",
+            "assessment": "no_information"
+          },
+          {
+            "note": "One listed liqueur contains \"artificial flavouring, colour E150a\".",
+            "source": "https://globalspirits-trading.example/brands",
+            "criterion": "natural",
+            "assessment": "concerns_found"
+          }
+        ],
+        "provider": "simulated",
+        "simulated": true,
+        "confidence": 0.81,
+        "promptVersion": "vendor-screening-v1",
+        "recommendation": "likely_reject",
+        "sourcesChecked": [
+          "https://globalspirits-trading.example",
+          "https://globalspirits-trading.example/brands"
+        ]
+      },
+      "error": null
+    },
+    "questions": [],
+    "events": [
+      {
+        "to_status": "email_unconfirmed",
+        "actor": "applicant",
+        "agoMs": 172860000
+      },
+      {
+        "to_status": "submitted",
+        "actor": "applicant",
+        "agoMs": 172800000
+      },
+      {
+        "to_status": "in_review",
+        "actor": "system",
+        "agoMs": 172740000
+      }
+    ]
+  },
+  {
+    "id": "app-almwiese",
+    "status": "needs_info",
+    "createdAgoMs": 172860000,
+    "submittedAgoMs": 172800000,
+    "data": {
+      "contact": {
+        "role": "Owner",
+        "email": "anna@almwiese-kraeuterhof.example",
+        "phone": "+49 8821 98765",
+        "website": "almwiese-kraeuterhof.example",
+        "lastName": "Brandl",
+        "firstName": "Anna",
+        "socialLinks": "instagram.com/almwiese.example"
+      },
+      "business": {
+        "type": "small_business",
+        "vatId": "",
+        "address": {
+          "city": "Garmisch-Partenkirchen",
+          "street": "Almweg 3",
+          "postcode": "82467"
+        },
+        "country": "DE",
+        "shopName": "Kräuterhof Almwiese",
+        "legalName": "Kräuterhof Almwiese, Anna Brandl",
+        "taxNumber": "141/234/56789",
+        "registerCourt": "",
+        "registerNumber": ""
+      },
+      "products": {
+        "story": "On our mountain farm we grow and pick herbs by hand and turn them into syrups, herbal salts and teas in small batches. Elderflower, mountain mint and spruce tip are our favourites.",
+        "photoIds": [
+          "11554eb0-5033-461f-95e2-c40095c669df.png",
+          "f00f7139-b79b-4a0e-9d49-4847d494d2f2.png",
+          "64be03dc-e0dd-4795-b253-9457a2295a67.png"
+        ],
+        "categories": [
+          "food"
+        ],
+        "priceRange": "€6 to €15",
+        "productCount": "14",
+        "whereSoldToday": "Farm shop, weekly market, and some Edeka stores in Bavaria",
+        "makesOwnProducts": "yes"
+      },
+      "agreement": {
+        "plan": "starter",
+        "language": "en",
+        "acceptTerms": true,
+        "legalSelfCertification": true
+      }
+    },
+    "photos": [
+      {
+        "id": "11554eb0-5033-461f-95e2-c40095c669df.png",
+        "name": "almwiese-1.png"
+      },
+      {
+        "id": "f00f7139-b79b-4a0e-9d49-4847d494d2f2.png",
+        "name": "almwiese-2.png"
+      },
+      {
+        "id": "64be03dc-e0dd-4795-b253-9457a2295a67.png",
+        "name": "almwiese-3.png"
+      }
+    ],
+    "dataFiles": [],
+    "terms": {
+      "version": null
+    },
+    "rules": {
+      "status": "done",
+      "result": [
+        {
+          "code": "eu_registered",
+          "label": "Registered in the EU",
+          "detail": "Germany",
+          "outcome": "pass"
+        },
+        {
+          "code": "vat",
+          "label": "VAT ID (EU VIES)",
+          "detail": "Format is valid. Live VIES check is switched off.",
+          "outcome": "unknown"
+        },
+        {
+          "code": "duplicates",
+          "label": "Duplicate check",
+          "detail": "No matches with other applications or vendors.",
+          "outcome": "pass"
+        },
+        {
+          "code": "email_domain",
+          "label": "Email domain",
+          "detail": "almwiese-kraeuterhof.example",
+          "outcome": "pass"
+        },
+        {
+          "code": "phone",
+          "label": "Phone format",
+          "detail": "+49882198765",
+          "outcome": "pass"
+        },
+        {
+          "code": "website",
+          "label": "Website reachable",
+          "detail": "https://almwiese-kraeuterhof.example answered 200.",
+          "outcome": "pass"
+        },
+        {
+          "code": "address",
+          "label": "Business address",
+          "detail": "Street address given.",
+          "outcome": "pass"
+        },
+        {
+          "code": "register",
+          "label": "Trade register",
+          "detail": "Not a company; no register entry expected.",
+          "outcome": "info"
+        }
+      ],
+      "error": null
+    },
+    "ai": {
+      "status": "done",
+      "result": {
+        "flags": [
+          {
+            "title": "Flavouring",
+            "detail": "Ingredient list mentions \"Aroma\" in one product.",
+            "source": "https://almwiese-kraeuterhof.example/syrups",
+            "severity": "warning"
+          },
+          {
+            "title": "Supermarket presence",
+            "detail": "Some regional Edeka stores; decide whether this counts as mainstream.",
+            "source": "https://almwiese-kraeuterhof.example/where-to-buy",
+            "severity": "info"
+          }
+        ],
+        "model": "none",
+        "summary": "Herb farm in Upper Bavaria making syrups and herbal salts. Regional maker, but one syrup lists \"flavouring\" without \"natural\", and products are sold in some Edeka stores. Worth a question before deciding.",
+        "criteria": [
+          {
+            "note": "Grows and processes herbs on its own farm near Garmisch.",
+            "source": "https://almwiese-kraeuterhof.example",
+            "criterion": "regional",
+            "assessment": "evidence_found"
+          },
+          {
+            "note": "\"Also available at selected Edeka stores in Bavaria.\" Local, not national.",
+            "source": "https://almwiese-kraeuterhof.example/where-to-buy",
+            "criterion": "not_mainstream",
+            "assessment": "concerns_found"
+          },
+          {
+            "note": "Hand-picked herbs, small batches.",
+            "source": "application",
+            "criterion": "quality",
+            "assessment": "evidence_found"
+          },
+          {
+            "note": "Elderflower syrup ingredients include \"Aroma\" (flavouring) without \"natural\".",
+            "source": "https://almwiese-kraeuterhof.example/syrups",
+            "criterion": "natural",
+            "assessment": "concerns_found"
+          }
+        ],
+        "provider": "simulated",
+        "simulated": true,
+        "confidence": 0.55,
+        "promptVersion": "vendor-screening-v1",
+        "recommendation": "needs_a_look",
+        "sourcesChecked": [
+          "https://almwiese-kraeuterhof.example",
+          "https://almwiese-kraeuterhof.example/syrups",
+          "https://almwiese-kraeuterhof.example/where-to-buy"
+        ],
+        "suggestedQuestion": "Your elderflower syrup lists \"Aroma\". Is this a natural flavouring, and could you tell us where it comes from?"
+      },
+      "error": null
+    },
+    "questions": [
+      {
+        "id": "q-almwiese",
+        "question": "Your elderflower syrup lists \"Aroma\". Is this a natural flavouring, and could you tell us where it comes from?",
+        "answer": null,
+        "askedAgoMs": 86400000,
+        "answeredAgoMs": null
+      }
+    ],
+    "events": [
+      {
+        "to_status": "email_unconfirmed",
+        "actor": "applicant",
+        "agoMs": 172860000
+      },
+      {
+        "to_status": "submitted",
+        "actor": "applicant",
+        "agoMs": 172800000
+      },
+      {
+        "to_status": "in_review",
+        "actor": "system",
+        "agoMs": 172740000
+      },
+      {
+        "to_status": "needs_info",
+        "actor": "admin",
+        "agoMs": 86400000,
+        "message": "Your elderflower syrup lists \"Aroma\". Is this a natural flavouring, and could you tell us where it comes from?"
+      }
+    ]
+  },
+  {
+    "id": "app-hopfenwerk",
+    "status": "in_review",
+    "createdAgoMs": 86460000,
+    "submittedAgoMs": 86400000,
+    "data": {
+      "contact": {
+        "role": "Brewer",
+        "email": "jonas@hopfenwerk-nord.example",
+        "phone": "+49 5626 123456",
+        "website": "hopfenwerk-nord.example",
+        "lastName": "Petersen",
+        "firstName": "Jonas",
+        "socialLinks": ""
+      },
+      "business": {
+        "type": "company",
+        "vatId": "DE987654321",
+        "address": {
+          "city": "Hamburg",
+          "street": "Hafenstraße 8",
+          "postcode": "20457"
+        },
+        "country": "DE",
+        "shopName": "Hopfenwerk Nord",
+        "legalName": "Hopfenwerk Nord GmbH",
+        "taxNumber": "",
+        "registerCourt": "Hamburg",
+        "registerNumber": "HRB 123456"
+      },
+      "products": {
+        "story": "We brew craft beer in Hamburg. Pale ale, IPA and a seasonal stout. Good beer for good people, every day.",
+        "photoIds": [
+          "8292da76-adcd-4d9e-9874-60990cb6ef1c.png",
+          "dd1a81d6-321f-4236-ba97-a996c7faea88.png",
+          "5b77d647-c8eb-43f4-91d6-bb0cdbec0879.png"
+        ],
+        "categories": [
+          "beer"
+        ],
+        "priceRange": "€3 to €5",
+        "productCount": "5",
+        "whereSoldToday": "",
+        "makesOwnProducts": "yes"
+      },
+      "agreement": {
+        "plan": "starter",
+        "language": "en",
+        "acceptTerms": true,
+        "legalSelfCertification": true
+      }
+    },
+    "photos": [
+      {
+        "id": "8292da76-adcd-4d9e-9874-60990cb6ef1c.png",
+        "name": "hopfenwerk-1.png"
+      },
+      {
+        "id": "dd1a81d6-321f-4236-ba97-a996c7faea88.png",
+        "name": "hopfenwerk-2.png"
+      },
+      {
+        "id": "5b77d647-c8eb-43f4-91d6-bb0cdbec0879.png",
+        "name": "hopfenwerk-3.png"
+      }
+    ],
+    "dataFiles": [],
+    "terms": {
+      "version": null
+    },
+    "rules": {
+      "status": "done",
+      "result": [
+        {
+          "code": "eu_registered",
+          "label": "Registered in the EU",
+          "detail": "Germany",
+          "outcome": "pass"
+        },
+        {
+          "code": "vat",
+          "label": "VAT ID (EU VIES)",
+          "detail": "Format is valid. Live VIES check is switched off.",
+          "outcome": "unknown"
+        },
+        {
+          "code": "duplicates",
+          "label": "Duplicate check",
+          "detail": "Same phone as \"Brennerei Kellerwald\" (in review)",
+          "outcome": "fail"
+        },
+        {
+          "code": "email_domain",
+          "label": "Email domain",
+          "detail": "hopfenwerk-nord.example",
+          "outcome": "pass"
+        },
+        {
+          "code": "phone",
+          "label": "Phone format",
+          "detail": "+495626123456",
+          "outcome": "pass"
+        },
+        {
+          "code": "website",
+          "label": "Website reachable",
+          "detail": "https://hopfenwerk-nord.example answered 200.",
+          "outcome": "pass"
+        },
+        {
+          "code": "address",
+          "label": "Business address",
+          "detail": "Street address given.",
+          "outcome": "pass"
+        },
+        {
+          "code": "register",
+          "label": "Trade register",
+          "detail": "HRB 123456 given. Register lookup is not automated yet.",
+          "outcome": "unknown"
+        }
+      ],
+      "error": null
+    },
+    "ai": {
+      "status": "done",
+      "result": {
+        "flags": [
+          {
+            "title": "Thin description",
+            "detail": "Not enough information to judge fit.",
+            "source": "application",
+            "severity": "warning"
+          }
+        ],
+        "model": "none",
+        "summary": "Craft brewery in Hamburg. The story is short and the website could not be read, so there is little to judge. Shares a phone number with another application.",
+        "criteria": [
+          {
+            "note": "Brewery address in Hamburg.",
+            "source": "application",
+            "criterion": "regional",
+            "assessment": "evidence_found"
+          },
+          {
+            "note": "No information about where the beer is sold.",
+            "criterion": "not_mainstream",
+            "assessment": "no_information"
+          },
+          {
+            "note": "Story has one sentence about the beer.",
+            "source": "application",
+            "criterion": "quality",
+            "assessment": "no_information"
+          },
+          {
+            "note": "No ingredient information found.",
+            "criterion": "natural",
+            "assessment": "no_information"
+          }
+        ],
+        "provider": "simulated",
+        "simulated": true,
+        "confidence": 0.4,
+        "promptVersion": "vendor-screening-v1",
+        "recommendation": "needs_a_look",
+        "sourcesChecked": [
+          "https://hopfenwerk-nord.example (not readable)"
+        ],
+        "suggestedQuestion": "Could you tell us more about how you brew, which beers you make and where they are sold today?"
+      },
+      "error": null
+    },
+    "questions": [],
+    "events": [
+      {
+        "to_status": "email_unconfirmed",
+        "actor": "applicant",
+        "agoMs": 86460000
+      },
+      {
+        "to_status": "submitted",
+        "actor": "applicant",
+        "agoMs": 86400000
+      },
+      {
+        "to_status": "in_review",
+        "actor": "system",
+        "agoMs": 86340000
+      }
+    ]
+  }
+]

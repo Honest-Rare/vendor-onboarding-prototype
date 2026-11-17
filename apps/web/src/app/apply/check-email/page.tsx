@@ -1,12 +1,15 @@
 'use client';
 
+import Link from 'next/link';
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { StorefrontShell } from '@/components/StorefrontShell';
 import { SimulatedNote } from '@/components/ui';
 
 function CheckEmail() {
-  const email = useSearchParams().get('email');
+  const params = useSearchParams();
+  const email = params.get('email');
+  const token = params.get('token');
   return (
     <div className="card stack">
       <h1>Check your email</h1>
@@ -16,7 +19,13 @@ function CheckEmail() {
       </p>
       <p className="muted">No email? Check your spam folder.</p>
       <SimulatedNote>
-        Prototype: emails go to the local test inbox at <a href="http://localhost:8026">localhost:8026</a>.
+        Prototype: no email is sent.{' '}
+        {token ? (
+          <Link href={`/apply/confirm?token=${encodeURIComponent(token)}`}>Open the confirmation link</Link>
+        ) : (
+          'Send an application to get a confirmation link'
+        )}
+        .
       </SimulatedNote>
     </div>
   );

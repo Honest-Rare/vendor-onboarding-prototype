@@ -4,8 +4,13 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { Badge, ErrorBox, Field, Loading, SimulatedNote, StatusBadge } from '@/components/ui';
-import { api, ApiError, formatDate, useLoad } from '@/lib/api';
+import { api, ApiError, fileUrl, formatDate, useLoad } from '@/lib/api';
 import {
+  ADDITIVES,
+  CERTIFICATIONS,
+  MADE_WHERE,
+  RETAIL_CHAINS,
+  YEARLY_VOLUME,
   AI_RECOMMENDATION,
   APPLICATION_STATUS,
   ASSESSMENT,
@@ -171,13 +176,36 @@ export default function ApplicationPage() {
               <dt>Legal confirmation</dt>
               <dd>{data.terms.legalSelfCertifiedAt ? `Confirmed ${formatDate(data.terms.legalSelfCertifiedAt)}` : '—'}</dd>
             </dl>
+            {d.standards && (
+              <>
+                <h3 style={{ marginTop: 16 }}>Our standards</h3>
+                <dl className="facts">
+                  <dt>Where made</dt>
+                  <dd>{MADE_WHERE[d.standards.madeWhere] ?? '—'}</dd>
+                  <dt>Town and region</dt>
+                  <dd>{d.standards.productionRegion || '—'}</dd>
+                  <dt>Ingredients from</dt>
+                  <dd>{d.standards.ingredientsFrom || '—'}</dd>
+                  <dt>National chains</dt>
+                  <dd>{RETAIL_CHAINS[d.standards.retailChains] ?? '—'}</dd>
+                  <dt>Yearly production</dt>
+                  <dd>{YEARLY_VOLUME[d.standards.yearlyVolume] ?? '—'}</dd>
+                  <dt>Artificial additives</dt>
+                  <dd>{ADDITIVES[d.standards.additives] ?? '—'}</dd>
+                  <dt>What makes them special</dt>
+                  <dd>{d.standards.whatMakesSpecial || '—'}</dd>
+                  <dt>Certifications</dt>
+                  <dd>{d.standards.certifications?.map((c: string) => CERTIFICATIONS[c] ?? c).join(', ') || '—'}</dd>
+                </dl>
+              </>
+            )}
             <h3 style={{ marginTop: 16 }}>Their story</h3>
             <p style={{ whiteSpace: 'pre-line' }}>{d.products.story}</p>
             <h3>Sample photos</h3>
             <div className="photos">
               {data.photos.map((p) => (
-                <a key={p.id} href={`/api/files/${p.id}`} target="_blank" rel="noreferrer">
-                  <img src={`/api/files/${p.id}`} alt={`Sample photo: ${p.name}`} />
+                <a key={p.id} href={fileUrl(p.id)} target="_blank" rel="noreferrer">
+                  <img src={fileUrl(p.id)} alt={`Sample photo: ${p.name}`} />
                 </a>
               ))}
             </div>
@@ -187,7 +215,7 @@ export default function ApplicationPage() {
                 <ul className="list-plain">
                   {data.dataFiles.map((f) => (
                     <li key={f.id}>
-                      <a href={`/api/files/${f.id}`} target="_blank" rel="noreferrer">
+                      <a href={fileUrl(f.id)} target="_blank" rel="noreferrer">
                         {f.name}
                       </a>
                     </li>

@@ -5,7 +5,17 @@ import { useRouter } from 'next/navigation';
 import { StorefrontShell } from '@/components/StorefrontShell';
 import { ErrorBox, Field } from '@/components/ui';
 import { api, ApiError, uploadFile } from '@/lib/api';
-import { BUSINESS_TYPES, CATEGORY_LABELS, MAKES_OWN, PLANS } from '@/lib/labels';
+import {
+  ADDITIVES,
+  BUSINESS_TYPES,
+  CATEGORY_LABELS,
+  CERTIFICATIONS,
+  MADE_WHERE,
+  MAKES_OWN,
+  PLANS,
+  RETAIL_CHAINS,
+  YEARLY_VOLUME,
+} from '@/lib/labels';
 
 const EU = [
   ['AT', 'Austria'], ['BE', 'Belgium'], ['BG', 'Bulgaria'], ['HR', 'Croatia'], ['CY', 'Cyprus'], ['CZ', 'Czechia'],
@@ -16,8 +26,9 @@ const EU = [
 ];
 const NON_EU = [['CH', 'Switzerland'], ['GB', 'United Kingdom'], ['NO', 'Norway']];
 
-const STEPS = ['Your business', 'Contact', 'What you sell', 'Plan and agreement'];
-const DRAFT_KEY = 'hr-application-draft-v1';
+const STEPS = ['Your business', 'Contact', 'What you sell', 'Our standards', 'Plan and agreement'];
+const LAST = STEPS.length - 1;
+const DRAFT_KEY = 'hr-application-draft-v2';
 
 type Photo = { id: string; name: string; preview?: string };
 type DataFile = { id: string; name: string };
@@ -47,9 +58,66 @@ const EMPTY = {
   },
   contact: { firstName: '', lastName: '', role: '', email: '', phone: '', website: '', socialLinks: '' },
   products: { categories: [] as string[], makesOwnProducts: '' as string, story: '', productCount: '', priceRange: '', whereSoldToday: '' },
+  standards: {
+    madeWhere: '' as string,
+    productionRegion: '',
+    ingredientsFrom: '',
+    retailChains: '' as string,
+    yearlyVolume: '' as string,
+    additives: '' as string,
+    whatMakesSpecial: '',
+    certifications: [] as string[],
+  },
   agreement: { plan: '' as string, acceptTerms: false, legalSelfCertification: false, language: 'en' },
 };
 type Form = typeof EMPTY;
+
+/** Prototype shortcut: the Brennerei Kellerwald example from the designs, with its sample photos. */
+const EXAMPLE: Form = {
+  business: {
+    ...EMPTY.business,
+    type: 'sole_trader',
+    legalName: 'Brennerei Kellerwald, Inh. Marta Hessler',
+    shopName: 'Brennerei Kellerwald',
+    vatId: 'DE123456789',
+    address: { street: 'Dorfstraße 12', postcode: '34596', city: 'Bad Zwesten' },
+  },
+  contact: {
+    firstName: 'Marta',
+    lastName: 'Hessler',
+    role: 'Owner and distiller',
+    email: 'hello@kellerwald-brennerei.example',
+    phone: '+49 5626 123456',
+    website: 'kellerwald-brennerei.example',
+    socialLinks: '',
+  },
+  products: {
+    categories: ['spirits'],
+    makesOwnProducts: 'yes',
+    story:
+      'We are a family distillery in the Kellerwald hills. Since 1987 we distil fruit brandies from the apples, pears and plums of our own orchards, and since 2019 a dry gin with juniper and herbs we pick ourselves. Every batch is small, bottled by hand and numbered. We add no flavourings and no sugar.',
+    productCount: '8',
+    priceRange: '€24 to €58',
+    whereSoldToday: 'Our farm shop and two regional markets in northern Hesse',
+  },
+  standards: {
+    madeWhere: 'own',
+    productionRegion: 'Bad Zwesten, Kellerwald (northern Hesse)',
+    ingredientsFrom: 'Fruit from our own orchards; juniper and herbs picked within 20 km of the distillery.',
+    retailChains: 'no',
+    yearlyVolume: '1k_10k',
+    additives: 'none',
+    whatMakesSpecial: 'Small batches from our own fruit, distilled twice in a copper still and bottled by hand. No sugar or flavourings added.',
+    certifications: ['awards'],
+  },
+  agreement: { plan: 'professional', acceptTerms: true, legalSelfCertification: true, language: 'en' },
+};
+const EXAMPLE_PHOTOS: Photo[] = [
+  { id: 'kellerwald-01.jpg', name: '01-heidegin-bottle.jpg', preview: '/mock-files/kellerwald-01.jpg' },
+  { id: 'kellerwald-02.jpg', name: '02-range-lineup.jpg', preview: '/mock-files/kellerwald-02.jpg' },
+  { id: 'kellerwald-03.jpg', name: '03-heather-syrup.jpg', preview: '/mock-files/kellerwald-03.jpg' },
+  { id: 'kellerwald-04.jpg', name: '04-copper-still.jpg', preview: '/mock-files/kellerwald-04.jpg' },
+];
 
 function stepErrors(step: number, f: Form, photos: Photo[]): string[] {
   const e: string[] = [];
@@ -81,6 +149,16 @@ function stepErrors(step: number, f: Form, photos: Photo[]): string[] {
     if (!f.products.productCount.trim() || !f.products.priceRange.trim()) e.push('Give the number of products and your price range.');
   }
   if (step === 3) {
+    const s = f.standards;
+    if (!s.madeWhere) e.push('Tell us where your products are made.');
+    if (!s.productionRegion.trim()) e.push('Give the town and region of production.');
+    if (!s.ingredientsFrom.trim()) e.push('Tell us where your main ingredients come from.');
+    if (!s.retailChains) e.push('Tell us whether your products are sold in national chains.');
+    if (!s.yearlyVolume) e.push('Choose your rough yearly production.');
+    if (!s.additives) e.push('Tell us whether your products contain artificial additives.');
+    if (!s.whatMakesSpecial.trim()) e.push('Tell us what makes your products special.');
+  }
+  if (step === 4) {
     if (!f.agreement.plan) e.push('Choose a plan.');
     if (!f.agreement.acceptTerms) e.push('Accept the vendor terms and privacy policy.');
     if (!f.agreement.legalSelfCertification) e.push('Confirm that you may legally sell these products.');
@@ -172,19 +250,19 @@ export default function ApplyPage() {
   };
 
   const submit = async () => {
-    const e = stepErrors(3, form, photos);
+    const e = stepErrors(LAST, form, photos);
     setErrors(e);
     if (e.length > 0) return scrollTop();
     setBusy(true);
     setApiError(null);
     try {
-      await api('/applications', {
+      const created = await api<{ id: string; token: string }>('/applications', {
         json: { ...form, products: { ...form.products, photoIds: photos.map((p) => p.id), dataFileIds: dataFiles.map((f) => f.id) } },
       });
       try {
         localStorage.removeItem(DRAFT_KEY);
       } catch {}
-      router.push(`/apply/check-email?email=${encodeURIComponent(form.contact.email)}`);
+      router.push(`/apply/check-email?email=${encodeURIComponent(form.contact.email)}&token=${encodeURIComponent(created.token)}`);
     } catch (err) {
       setApiError(err as ApiError);
       scrollTop();
@@ -196,6 +274,7 @@ export default function ApplyPage() {
   const b = form.business;
   const c = form.contact;
   const p = form.products;
+  const s = form.standards;
   const a = form.agreement;
 
   return (
@@ -204,14 +283,31 @@ export default function ApplyPage() {
         <div ref={topRef} />
         <h1>Apply to sell on Honest &amp; Rare</h1>
         <p className="muted">
-          Four short steps. Your answers are kept in this browser until you send them. Bank and ID details come later,
+          Five short steps. Your answers are kept in this browser until you send them. Bank and ID details come later,
           only if you are approved.
+        </p>
+        <p className="simulated" style={{ marginBottom: 16 }}>
+          Prototype:{' '}
+          <button
+            type="button"
+            className="link-button"
+            onClick={() => {
+              setForm(EXAMPLE);
+              setPhotos(EXAMPLE_PHOTOS);
+              setErrors([]);
+            }}
+          >
+            fill in the Brennerei Kellerwald example
+          </button>
+          .
         </p>
 
         <ol className="steps" aria-label="Progress">
           {STEPS.map((label, i) => (
             <li key={label} className={i === step ? 'current' : i < step ? 'done' : ''} aria-current={i === step ? 'step' : undefined}>
-              <span className="num">Step {i + 1} of 4</span>
+              <span className="num">
+                Step {i + 1} of {STEPS.length}
+              </span>
               {label}
             </li>
           ))}
@@ -422,6 +518,101 @@ export default function ApplyPage() {
 
           {step === 3 && (
             <div className="card stack">
+              <div>
+                <h2 style={{ margin: '0 0 4px' }}>Does your business fit Honest &amp; Rare?</h2>
+                <p className="muted small" style={{ margin: 0 }}>
+                  We look for regional, independent producers with high-quality products made from natural ingredients. These
+                  questions help us check that early. [Mock questions, to be confirmed]
+                </p>
+              </div>
+              <fieldset className="field">
+                <legend>Where are your products made?</legend>
+                <div className="choices">
+                  {Object.entries(MADE_WHERE).map(([value, label]) => (
+                    <label className="choice" key={value}>
+                      <input type="radio" name="madeWhere" checked={s.madeWhere === value} onChange={() => set('standards', { madeWhere: value })} />
+                      <span>{label}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <Field label="Town and region of production" htmlFor="region" required hint="Where the products are actually made">
+                <input id="region" type="text" value={s.productionRegion} onChange={(e) => set('standards', { productionRegion: e.target.value })} />
+              </Field>
+              <Field label="Where do your main ingredients come from?" htmlFor="ingredientsFrom" required hint="For example own harvest, local farms, imported">
+                <textarea
+                  id="ingredientsFrom"
+                  style={{ minHeight: 80 }}
+                  value={s.ingredientsFrom}
+                  onChange={(e) => set('standards', { ingredientsFrom: e.target.value })}
+                />
+              </Field>
+              <fieldset className="field">
+                <legend>Are your products sold in national supermarket or retail chains?</legend>
+                <div className="choices">
+                  {Object.entries(RETAIL_CHAINS).map(([value, label]) => (
+                    <label className="choice" key={value}>
+                      <input type="radio" name="chains" checked={s.retailChains === value} onChange={() => set('standards', { retailChains: value })} />
+                      <span>{label}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <Field label="Yearly production" htmlFor="volume" required hint="Roughly, across all products">
+                <select id="volume" value={s.yearlyVolume} onChange={(e) => set('standards', { yearlyVolume: e.target.value })}>
+                  <option value="">Choose…</option>
+                  {Object.entries(YEARLY_VOLUME).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <fieldset className="field">
+                <legend>Do any of your products contain artificial additives?</legend>
+                <p className="hint">Artificial flavourings, colourings, sweeteners or preservatives</p>
+                <div className="choices">
+                  {Object.entries(ADDITIVES).map(([value, label]) => (
+                    <label className="choice" key={value}>
+                      <input type="radio" name="additives" checked={s.additives === value} onChange={() => set('standards', { additives: value })} />
+                      <span>{label}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <Field label="What makes your products special?" htmlFor="special" required hint="Craft, methods, ingredients, awards">
+                <textarea id="special" value={s.whatMakesSpecial} onChange={(e) => set('standards', { whatMakesSpecial: e.target.value })} />
+              </Field>
+              <fieldset className="field">
+                <legend>
+                  Certifications and labels<span className="optional"> (optional)</span>
+                </legend>
+                <div className="form-grid" style={{ gap: 8 }}>
+                  {Object.entries(CERTIFICATIONS).map(([value, label]) => (
+                    <label className="choice" key={value}>
+                      <input
+                        type="checkbox"
+                        checked={s.certifications.includes(value)}
+                        onChange={(e) =>
+                          set('standards', {
+                            certifications: e.target.checked ? [...s.certifications, value] : s.certifications.filter((x) => x !== value),
+                          })
+                        }
+                      />
+                      <span>{label}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <div className="alert alert-info small">
+                <strong>How we use this:</strong> our AI compares your answers, website and photos with our standards to prepare the
+                review. A person on our team always makes the decision.
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="card stack">
               <fieldset className="field">
                 <legend>Plan</legend>
                 <div className="choices">
@@ -474,7 +665,7 @@ export default function ApplyPage() {
             ) : (
               <span />
             )}
-            {step < 3 ? (
+            {step < LAST ? (
               <button type="button" className="btn btn-primary" onClick={next}>
                 Continue
               </button>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { ResetPrototypeData } from './ResetPrototypeData';
 
 export function StorefrontShell({ children }: { children: ReactNode }) {
   return (
@@ -20,7 +21,10 @@ export function StorefrontShell({ children }: { children: ReactNode }) {
       <footer className="site-footer">
         <div className="container spread">
           <span>Honest &amp; Rare: vendor onboarding pre-prototype</span>
-          <Link href="/admin">Admin console</Link>
+          <span className="row" style={{ gap: 16 }}>
+            <ResetPrototypeData />
+            <Link href="/admin">Admin console</Link>
+          </span>
         </div>
       </footer>
     </>

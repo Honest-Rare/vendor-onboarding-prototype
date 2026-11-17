@@ -35,7 +35,7 @@ test applications, so the duplicate checks stay clean.
 | First name | Lena |
 | Last name | Brakhage |
 | Role | Managing director |
-| Email | *use any address, e.g.* `lena@heidegeist.example` (the email lands in Mailpit, http://localhost:8026) |
+| Email | *use any address, e.g.* `lena@heidegeist.example` (no email is sent; the next page links to the confirmation step) |
 | Phone | +49 5194 774210 |
 | Website | heidegeist.example |
 | Social links | instagram.com/heidegeist.example |
@@ -50,8 +50,6 @@ test applications, so the duplicate checks stay clean.
 | Price range | €9 – €42 |
 | Where sold today | Our farm shop in Bispingen, two delicatessens in Lüneburg, Christmas markets in Hamburg |
 | Photos (3–5) | everything in `application-photos/` |
-| Plan | Starter |
-| Terms + legal self-certification | tick both |
 
 **Story** (needs at least 80 characters):
 
@@ -61,9 +59,32 @@ test applications, so the duplicate checks stay clean.
 > honey from the heath beekeepers. Everything is distilled, macerated, bottled and labelled by
 > hand, in batches of around 300 bottles. No flavourings, no colourings, no sugar beyond honey.
 
+### Our standards
+
+| Field | Value |
+| --- | --- |
+| Where are your products made? | All in our own workshop, brewery, distillery or kitchen in the EU |
+| Town and region of production | Bispingen, Lüneburg Heath |
+| Where do your main ingredients come from? | Heather blossom we pick ourselves, juniper from a farm two villages away, honey from heath beekeepers |
+| National chains? | In a few regional shops or delicatessens |
+| Yearly production | 1,000 to 10,000 |
+| Artificial additives? | No, only natural ingredients |
+| What makes your products special? | 150-litre copper still in our old barn, hand-picked heather, batches of about 300 bottles |
+| Certifications | none |
+
+### Plan and agreement
+
+| Field | Value |
+| --- | --- |
+| Plan | Starter |
+| Terms + legal self-certification | tick both |
+
 ---
 
-## Part 2: Vendor panel sections (after an admin approves the application)
+## Part 2: Vendor panel (after an admin approves the application)
+
+The vendor panel prototype opens with its own sample vendor (Brennerei Kellerwald). Use the values
+below to try the matching fields on the Legal and tax, Shipping, Shop page and Products pages.
 
 ### Business verification
 | Field | Value |
@@ -159,13 +180,13 @@ test applications, so the duplicate checks stay clean.
 > Made in batches of around 300 bottles. Try it with a dry tonic and a strip of lemon peel.
 
 ### Payouts
-Use the simulated Stripe page; no data needed.
+Click **Continue on Stripe**: a prototype page stands in for Stripe; no data needed.
 
 ---
 
 ## Negative tests (`negative-tests/`)
 
-These should all be refused by the upload:
+The file picker only offers the allowed types. The prototype refuses files over 8 MB:
 
 | File | Expected |
 | --- | --- |
@@ -177,8 +198,5 @@ Also try submitting the application with only 2 photos (needs 3) or a story unde
 
 ## What will not pass (expected)
 
-- **VAT ID**: the VIES check is real, and DE298374615 is made up, so it will show as not valid.
-- **Website**: `.example` domains never resolve, so the reachability check fails.
-- **AI screening**: shows "not screened", since the simulated AI only has scripted results for the 5 seeded applications.
-
-These give the admin something to look at, which is useful for testing the review screen.
+- **VAT ID and website**: the prototype does not check them; the admin review shows them as "Unknown".
+- **AI screening**: shows "No information" for every criterion, since only the 5 sample applications have scripted results.

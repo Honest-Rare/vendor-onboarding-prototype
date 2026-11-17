@@ -1,64 +1,45 @@
 'use client';
 
-import { Suspense, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { ErrorBox, SimulatedNote } from '@/components/ui';
+import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ErrorBox } from '@/components/ui';
 import { api, ApiError } from '@/lib/api';
 
-function SimulatedStripe() {
+/** Stands in for Stripe's hosted onboarding pages. Rendered without the vendor sidebar. */
+export default function SimulatedStripePage() {
   const router = useRouter();
-  const account = useSearchParams().get('account') ?? '';
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
 
-  const complete = async () => {
+  const finish = async () => {
     setBusy(true);
     setError(null);
     try {
-      await api('/vendor/payouts/simulate-complete', { json: { accountId: account } });
-      router.replace('/vendor');
+      await api('/vendor/payouts/stripe-complete', { method: 'POST', json: {} });
+      router.replace('/vendor/payouts');
     } catch (e) {
-      setError(e as ApiError);
+      setError(e instanceof ApiError ? e : new ApiError(String(e), 0));
       setBusy(false);
     }
   };
 
   return (
-    <div className="stack narrow">
-      <h1>Payout setup</h1>
-      <SimulatedNote>
-        Simulated Stripe. With real test keys, this step happens on Stripe&apos;s own pages: identity check, owners and bank
-        account (IBAN). Honest &amp; Rare never sees those details.
-      </SimulatedNote>
-      <ErrorBox error={error} />
-      <div className="card stack">
-        <p style={{ margin: 0 }}>On Stripe, the vendor would now:</p>
-        <ol className="flow">
-          <li>Confirm their business details</li>
-          <li>Verify the legal representative (ID document)</li>
-          <li>Add owners and directors (companies)</li>
-          <li>Add the bank account for payouts</li>
-        </ol>
-        <div className="row">
-          <button type="button" className="btn btn-primary" disabled={busy || !account} onClick={() => void complete()}>
-            Complete payout setup (simulated)
-          </button>
-          <button type="button" className="btn" onClick={() => router.replace('/vendor')}>
-            Cancel
-          </button>
-        </div>
-        <p className="muted small" style={{ margin: 0 }}>
-          Account {account}
+    <main className="container" style={{ display: 'flex', justifyContent: 'center', padding: '64px 16px' }}>
+      <section className="card stack" style={{ width: '100%', maxWidth: 480 }}>
+        <h1 style={{ fontSize: '1.6rem', margin: 0 }}>Stripe onboarding</h1>
+        <p className="simulated">
+          Prototype: this page stands in for Stripe&apos;s own onboarding pages. Honest &amp; Rare never sees your ID or bank
+          details.
         </p>
-      </div>
-    </div>
-  );
-}
-
-export default function SimulatedStripePage() {
-  return (
-    <Suspense>
-      <SimulatedStripe />
-    </Suspense>
+        <ErrorBox error={error} />
+        <div className="row">
+          <button type="button" className="btn btn-primary" disabled={busy} onClick={() => void finish()}>
+            {busy ? 'Finishing…' : 'Finish on Stripe and return'}
+          </button>
+          <Link href="/vendor/payouts">Back without finishing</Link>
+        </div>
+      </section>
+    </main>
   );
 }

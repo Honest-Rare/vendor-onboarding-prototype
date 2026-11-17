@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { handleMockRequest, mockFileUrl, registerMockUpload } from './mock/server';
 
 export class ApiError extends Error {
   constructor(
@@ -15,32 +16,36 @@ export class ApiError extends Error {
 
 type Options = { method?: string; json?: unknown; body?: BodyInit };
 
-/** Calls the NestJS API through the Next.js proxy at /api. */
+/**
+ * Front-end-only build: every call is answered by the in-browser mock in `lib/mock/server.ts`.
+ * The paths and response shapes are the contract for the real backend. To connect one, replace the
+ * body of this function with a `fetch` to the backend (see docs/decisions/0001-front-end-only.md).
+ */
 export async function api<T = any>(path: string, options: Options = {}): Promise<T> {
-  const res = await fetch(`/api${path}`, {
-    method: options.method ?? (options.json !== undefined || options.body ? 'POST' : 'GET'),
-    headers: options.json !== undefined ? { 'content-type': 'application/json' } : undefined,
-    body: options.json !== undefined ? JSON.stringify(options.json) : options.body,
-    credentials: 'same-origin',
-  });
-  const text = await res.text();
-  let body: any = null;
-  try {
-    body = text ? JSON.parse(text) : null;
-  } catch {
-    body = { message: text };
-  }
-  if (!res.ok) {
+  const method = options.method ?? (options.json !== undefined || options.body ? 'POST' : 'GET');
+  // A short pause so loading states and disabled buttons behave as they would over a network.
+  await new Promise((resolve) => setTimeout(resolve, 150));
+  const res = handleMockRequest(method, path, options.json ?? options.body);
+  if (res.status >= 400) {
+    const body = res.body as any;
     const message = typeof body?.message === 'string' ? body.message : `Something went wrong (${res.status})`;
     throw new ApiError(message, res.status, Array.isArray(body?.errors) ? body.errors : []);
   }
-  return body as T;
+  // A copy, so pages never hold a reference into the mock store.
+  return structuredClone(res.body) as T;
 }
 
+/** Uploads a file. In the mock, the file stays in this browser tab as an object URL. */
 export async function uploadFile(path: string, file: File): Promise<{ id: string; name: string }> {
+  registerMockUpload(path, file);
   const form = new FormData();
   form.append('file', file);
   return api(path, { body: form });
+}
+
+/** URL of an uploaded or sample file, for links and <img>. */
+export function fileUrl(id: string): string {
+  return mockFileUrl(id);
 }
 
 /**
@@ -87,15 +92,17 @@ export function useLoad<T>(path: string, loginPath?: string, pollWhile?: (data: 
   return { data, error, reload };
 }
 
+/** "9 Nov 2026" */
 export function formatDate(value: string | null | undefined) {
   if (!value) return '';
-  return new Date(value).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  return new Date(value).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 export function waitingSince(value: string | null | undefined) {
   if (!value) return '';
   const hours = Math.floor((Date.now() - new Date(value).getTime()) / 3600000);
   if (hours < 1) return 'under an hour';
-  if (hours < 48) return `${hours} h`;
-  return `${Math.floor(hours / 24)} days`;
+  if (hours < 24) return `${hours} h`;
+  const days = Math.floor(hours / 24);
+  return days === 1 ? '1 day' : `${days} days`;
 }
